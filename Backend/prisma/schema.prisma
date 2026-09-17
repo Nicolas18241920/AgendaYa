@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// HU-01: Catálogo de Servicios
+// ==========================================
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Float
+  durationMin Int
+  category    String?
+  
+  // Relación: Un servicio puede ser dado por varios especialistas
+  specialists Specialist[] 
+  
+  // NUEVO: Un servicio puede tener varias citas agendadas
+  appointments Appointment[]
+}
+
+
+// ==========================================
+// HU-02: Registro de Personal
+// ==========================================
+model Specialist {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  specialty   String
+  
+  // Relación: Un especialista tiene varios servicios asignados
+  services    Service[] 
+  
+  // Citas que tiene asignadas este especialista
+  appointments Appointment[]
+}
+
+// ==========================================
+// HU-06: Confirmación de Cita (y HU-13)
+// ==========================================
+model Appointment {
+  id            Int        @id @default(autoincrement())
+  customerName  String
+  customerEmail String
+  customerPhone String
+  date          DateTime
+  serviceId     Int
+  specialistId  Int
+  status        String     @default("Agendada")
+  createdAt     DateTime   @default(now())
+
+  service       Service    @relation(fields: [serviceId], references: [id])
+  specialist    Specialist @relation(fields: [specialistId], references: [id])
+}

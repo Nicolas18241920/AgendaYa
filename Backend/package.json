@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend para AgendaYa",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "db:push": "prisma db push",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
