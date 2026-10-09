@@ -384,6 +384,6 @@ app.put('/api/appointments/:id/status', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo y funcionando en http://localhost:${PORT}`);
+  console.log('🚀 Servidor iniciado en main por Nicolas en puerto:', PORT);
 });
 
