@@ -53,8 +53,8 @@ function App() {
   useEffect(() => { loadData(); }, []);
 
   useEffect(() => {
-    if (view === 'admin') loadAppointments();
-  }, [view]);
+    if (view === 'admin' || form.date || form.specialistId) loadAppointments();
+  }, [view, form.date, form.specialistId]);
 
   // HU-13: Cambiar estado de cita con intentos inteligentes de fallback + Toast de éxito
   const handleStatusChange = async (id, newStatus) => {
@@ -121,12 +121,57 @@ function App() {
     return { date: String(dateTimeStr), time: '' };
   };
 
+  // Función de validación robusta de franja ocupada (HU-08)
+  const isSlotOccupied = (slotValue) => {
+    if (!form.date || !form.specialistId) return false;
+
+    return adminAppointments.some(apt => {
+      // 1. Validar Especialista
+      const spId = apt.specialistId ?? apt.specialist_id ?? apt.specialist?.id;
+      if (Number(spId) !== Number(form.specialistId)) return false;
+
+      // 2. Si está cancelada, no se considera ocupada
+      if (apt.status === 'Cancelada') return false;
+
+      // 3. Comparación de fecha y hora
+      const rawDT = apt.dateTime || apt.date;
+      if (!rawDT) return false;
+
+      const strDT = String(rawDT);
+
+      // Coincidencia directa por texto
+      if (strDT.includes(form.date) && strDT.includes(slotValue)) return true;
+
+      // Coincidencia convirtiendo objetos Date (Maneja ISO / UTC a hora local)
+      try {
+        const d = new Date(rawDT);
+        if (!isNaN(d.getTime())) {
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const hours = String(d.getHours()).padStart(2, '0');
+          const minutes = String(d.getMinutes()).padStart(2, '0');
+
+          const localDate = `${year}-${month}-${day}`;
+          const localTime = `${hours}:${minutes}`;
+
+          if (localDate === form.date && localTime === slotValue) return true;
+        }
+      } catch (e) {
+        // Continuar si no se puede parsear Date
+      }
+
+      return false;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage({ text: 'Procesando...', type: '' });
 
     const payload = {
       ...form,
+      status: 'Agendada', // Garantiza HU-13 (Estado inicial)
       dateTime: `${form.date}T${form.time}`
     };
 
@@ -189,6 +234,7 @@ function App() {
     return sp.services && sp.services.some(s => Number(s.id) === Number(form.serviceId));
   });
 
+  // Filtros de la tabla (HU-12)
   const filteredAdminAppointments = adminAppointments.filter(apt => {
     if (filterDate && !String(apt.dateTime || apt.date).startsWith(filterDate)) return false;
     if (filterSpecialist) {
@@ -343,7 +389,6 @@ function App() {
                         {form.date && (
                           <div className="input-wrapper" style={{ flex: 1 }}>
                             <label className="input-label">Hora de la Cita</label>
-                            {/* Desplegable de Horas Permitidas */}
                             <select 
                               className="form-control" 
                               required 
@@ -351,9 +396,20 @@ function App() {
                               onChange={e => setForm({ ...form, time: e.target.value })}
                             >
                               <option value="">Hora...</option>
-                              {timeSlots.map(slot => (
-                                <option key={slot.value} value={slot.value}>{slot.label}</option>
-                              ))}
+                              {timeSlots.map(slot => {
+                                const estaOcupada = isSlotOccupied(slot.value);
+
+                                return (
+                                  <option 
+                                    key={slot.value} 
+                                    value={slot.value}
+                                    disabled={estaOcupada}
+                                    style={estaOcupada ? { color: '#9ca3af', backgroundColor: '#e2e8f0' } : {}}
+                                  >
+                                    {slot.label} {estaOcupada ? '(Ocupado)' : ''}
+                                  </option>
+                                );
+                              })}
                             </select>
                           </div>
                         )}
@@ -475,8 +531,9 @@ function App() {
                         })
                       ) : (
                         <tr>
+                          {/* HU-12 CA3: Mensaje exacto de tabla vacía */}
                           <td colSpan="5" style={{ textAlign: 'center', color: '#64748b', padding: '20px' }}>
-                            No se encontraron citas registradas.
+                            No hay citas programadas para esta fecha.
                           </td>
                         </tr>
                       )}
