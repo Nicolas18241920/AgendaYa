@@ -2,7 +2,7 @@ name: CI/CD Pipeline - AgendaYA
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "feature/*", main, master ]
   pull_request:
     branches: [ main, master ]
 
