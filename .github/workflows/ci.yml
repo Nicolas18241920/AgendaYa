@@ -2,10 +2,8 @@ name: AgendaYa PRO - Pipeline DevOps CI/CD
 
 on:
   push:
-    branches: [ "feature/hu-*", "feature/**" ]
+    branches: [ "main", "master", "feature/hu-*", "feature/**" ]
   pull_request:
-    branches: [ "main", "master" ]
-  push:
     branches: [ "main", "master" ]
 
 jobs:
@@ -24,7 +22,7 @@ jobs:
 
       - name: 3. Build / Setup (Instalación de Dependencias)
         run: |
-          cd backend
+          cd Backend
           npm ci || npm install
 
       - name: 4. Análisis Estático (Linter)
@@ -33,7 +31,7 @@ jobs:
 
       - name: 5. Pruebas Unitarias y Cobertura QA (Jest)
         run: |
-          cd backend
+          cd Backend
           npx jest --coverage --coverageThreshold='{"global":{"branches":70,"functions":70,"lines":70,"statements":70}}'
 
   continuous-deployment:
