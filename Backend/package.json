@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Backend para AgendaYa",
   "main": "index.js",
+  
   "scripts": {
-    "start": "node index.js",
-    "db:push": "prisma db push",
-    "prisma:generate": "prisma generate",
-    "test": "echo \"[Backend CI] Pruebas unitarias completadas sin errores.\""
-  },
+  "start": "node index.js",
+  "test": "jest --coverage"
+},
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "cors": "^2.8.5",
