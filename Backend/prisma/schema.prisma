@@ -11,33 +11,26 @@ datasource db {
 // HU-01: Catálogo de Servicios
 // ==========================================
 model Service {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
   price       Float
   durationMin Int
   category    String?
   
-  // Relación: Un servicio puede ser dado por varios especialistas
   specialists Specialist[] 
-  
-  // NUEVO: Un servicio puede tener varias citas agendadas
   appointments Appointment[]
 }
-
 
 // ==========================================
 // HU-02: Registro de Personal
 // ==========================================
 model Specialist {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  specialty   String
-  
-  // Relación: Un especialista tiene varios servicios asignados
-  services    Service[] 
-  
-  // Citas que tiene asignadas este especialista
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  specialty    String
+  avatar       String?       
+  services     Service[] 
   appointments Appointment[]
 }
 
@@ -57,4 +50,30 @@ model Appointment {
 
   service       Service    @relation(fields: [serviceId], references: [id])
   specialist    Specialist @relation(fields: [specialistId], references: [id])
+}
+
+// ==========================================
+// HU-03: Horario General
+// ==========================================
+model GeneralSchedule {
+  id         Int      @id @default(autoincrement())
+  dayOfWeek  Int      
+  isOpen     Boolean  @default(true) 
+  openTime   String?  
+  closeTime  String?  
+  breakStart String?  
+  breakEnd   String?  
+
+  @@unique([dayOfWeek]) 
+}
+
+// ==========================================
+// Gestión de Pacientes / Clientes
+// ==========================================
+model Patient {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  createdAt DateTime @default(now())
 }
