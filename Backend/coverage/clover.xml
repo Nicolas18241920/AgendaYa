@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1793246528098" clover="3.2.0">
-  <project timestamp="1793246528098" name="All files">
+<coverage generated="1793248039257" clover="3.2.0">
+  <project timestamp="1793248039257" name="All files">
     <metrics statements="12" coveredstatements="11" conditionals="15" coveredconditionals="13" methods="2" coveredmethods="2" elements="29" coveredelements="26" complexity="0" loc="12" ncloc="12" packages="1" files="1" classes="1"/>
     <file name="appointmentLogic.js" path="C:\Users\User\Desktop\Nicolas\AgendaYa\Backend\services\appointmentLogic.js">
       <metrics statements="12" coveredstatements="11" conditionals="15" coveredconditionals="13" methods="2" coveredmethods="2"/>

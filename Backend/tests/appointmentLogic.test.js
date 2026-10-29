@@ -16,7 +16,7 @@ describe('HU-12: Pruebas Unitarias de Lógica de Negocio (QA)', () => {
 
   describe('Prueba 2: Disponibilidad de Horarios', () => {
     test('Bloquea automáticamente el turno de almuerzo (12:00 PM)', () => {
-      expect(isTimeSlotAvailable('12:00', [])).toBe(true);
+      expect(isTimeSlotAvailable('12:00', [])).toBe(false);
     });
 
     test('Bloquea turnos ya ocupados por otros clientes', () => {
